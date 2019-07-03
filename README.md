@@ -6,3 +6,5 @@ lógica de predicados, para um agente que controle o funcionamento de 3 elevador
 	- swipl file.pl
 
 > [Interpretador – SWI Prolog](http://www.swi-prolog.org/) 
+
+> http://wiki.di.uminho.pt/twiki/pub/Education/LC/0506/prolog61-68.pdf
