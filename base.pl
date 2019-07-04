@@ -114,61 +114,144 @@ compare_mesmo(X,Y,W,A,B,C) :-
 
 qual_elevador(Andar_origem, Andar_destino) :- 
     (
-
-
         compare_mesmo(X,Y,W,A,B,C)->
             add_parada(1,Andar_destino),
             compare_andar(1,Andar_atual,s,Andar_origem,Andar_destino),
             format('Elevador: ~w  Destino: ~wº andar',[1, Andar_destino])
         ;
-
-	        estado_atual(1,Andar_atual_1,Status_1), estado_atual(2,Andar_atual_2,Status_2), estado_atual(3,Andar_atual_3,Status_3), 
-			(
-		        Andar_atual_1 =< Andar_origem,
-		        Andar_atual_2 =< Andar_origem,
-		        Andar_atual_3 =< Andar_origem,
-		        Andar_origem < Andar_destino ->
-
-		        	(
-		        		Status_1 == s, 
-		        		Status_2 == s,
-		        		Status_3 == s ->
-
-		        		(
-		        			Andar_origem - Andar_atual_1 < Andar_origem - Andar_atual_2,
-		        			Andar_origem - Andar_atual_1 < Andar_origem - Andar_atual_3->
-		        				add_parada(1,Andar_destino),
-            					compare_andar(1,Andar_atual,s,Andar_origem,Andar_destino),
-		        				format('Elevador: ~w  Destino: ~wº andar',[1, Andar_destino])
-
-		        			;
-		        			(
-		        				Andar_origem - Andar_atual_2 < Andar_origem - Andar_atual_1,
-		        				Andar_origem - Andar_atual_2 < Andar_origem - Andar_atual_3->
-		        					add_parada(2,Andar_destino),
-            						compare_andar(2,Andar_atual,s,Andar_origem,Andar_destino),
-		        					format('Elevador: ~w  Destino: ~wº andar',[2, Andar_destino])
-
-		        				;
-		        					add_parada(3,Andar_destino),
-            						compare_andar(3,Andar_atual,s,Andar_origem,Andar_destino),
-		        					format('Elevador: ~w  Destino: ~wº andar',[3, Andar_destino])
-		        			)
-
-		        		)
-		        		/*;*/
-
-
-		        	)
-		        /*;*/
-
-			)
-            
+	        proxima_chamada(Andar_origem,Andar_destino)
     ).
 
 
+proxima_chamada(Andar_origem,Andar_destino):-
+	(
+		/*pessoa subindo*/
+		Retorno = 0,
+		Andar_origem < Andar_destino ->
+			proximo_elevador_subindo(Andar_origem,Andar_destino, Retorno)
+	).
 
 
+proximo_elevador_subindo(Andar_origem,Andar_destino,Retorno):-
+	estado_atual(1,Andar_atual_1,Status_atual_1), 
+	estado_atual(2,Andar_atual_2,Status_atual_2), 
+	estado_atual(3,Andar_atual_3,Status_atual_3),
+	(
+		Status_atual_1 == s,
+		Status_atual_2 == s,
+		Status_atual_3 == s ->
+			/*todos estao subindo*/
+			validacao_1(Andar_origem,Andar_destino,Retorno),
+			(
+				Retorno == 0 ->
+					validacao_2(Andar_origem,Andar_destino,Retorno)		
+				;
+				write('aa')
+			)
 
+	).
+    
+validacao_1(Andar_origem,Andar_destino,Retorno):-
+	estado_atual(1,Andar_atual_1,Status_atual_1), 
+	estado_atual(2,Andar_atual_2,Status_atual_2), 
+	estado_atual(3,Andar_atual_3,Status_atual_3),
+	(
+		Andar_origem < Andar_atual_2,
+		Andar_origem < Andar_atual_3,
+		Andar_atual_1 =< Andar_origem -> 
+			format('Elevador: ~w  Destino: ~wº andar',[1, Andar_destino]),
+			add_parada(1,Andar_destino),
+            compare_andar(1,Andar_atual,s,Andar_origem,Andar_destino),
+			Retorno is 1
+		;
+			(
+				Andar_origem < Andar_atual_1,
+				Andar_origem < Andar_atual_3,
+				Andar_atual_2 =< Andar_origem ->
+					format('Elevador: ~w  Destino: ~wº andar',[2, Andar_destino]),
+					add_parada(2,Andar_destino),
+            		compare_andar(2,Andar_atual,s,Andar_origem,Andar_destino),
+					Retorno is 1
+				;
+				(
+					Andar_origem < Andar_atual_1, 
+					Andar_origem < Andar_atual_2,
+					Andar_atual_3 =< Andar_origem ->
+						format('Elevador: ~w  Destino: ~wº andar',[3, Andar_destino]),
+						add_parada(3,Andar_destino),
+            			compare_andar(3,Andar_atual,s,Andar_origem,Andar_destino),
+						Retorno is 1
+					;
+						Retorno is 0
+
+				)
+			)
+	).    
+
+
+validacao_2(Andar_origem,Andar_destino,Retorno):-
+	estado_atual(1,Andar_atual_1,Status_atual_1), 
+	estado_atual(2,Andar_atual_2,Status_atual_2), 
+	estado_atual(3,Andar_atual_3,Status_atual_3),
+	(
+		Andar_origem < Andar_atual_3,
+		Andar_atual_1 =< Andar_origem,
+		Andar_atual_2 =< Andar_origem ->
+			(
+				Andar_origem - Andar_atual_2 =< Andar_origem - Andar_atual_1 ->
+					format('Elevador: ~w  Destino: ~wº andar',[2, Andar_destino]),
+					add_parada(2,Andar_destino),
+            		compare_andar(2,Andar_atual,s,Andar_origem,Andar_destino),
+					Retorno is 1
+				;
+					format('Elevador: ~w  Destino: ~wº andar',[1, Andar_destino]),
+					add_parada(1,Andar_destino),
+            		compare_andar(1,Andar_atual,s,Andar_origem,Andar_destino),
+					Retorno is 1
+
+			)
+		;
+			(
+				Andar_origem < Andar_atual_2,
+				Andar_atual_1 =< Andar_origem,
+				Andar_atual_3 =< Andar_origem ->
+					(
+						Andar_origem - Andar_atual_3 =< Andar_origem - Andar_atual_1 ->
+							format('Elevador: ~w  Destino: ~wº andar',[3, Andar_destino]),
+							add_parada(3,Andar_destino),
+            				compare_andar(3,Andar_atual,s,Andar_origem,Andar_destino),
+							Retorno is 1
+						;
+							format('Elevador: ~w  Destino: ~wº andar',[1, Andar_destino]),
+							add_parada(1,Andar_destino),
+            				compare_andar(1,Andar_atual,s,Andar_origem,Andar_destino),
+							Retorno is 1
+
+					)
+				;
+					(
+					
+						Andar_origem < Andar_atual_1,
+						Andar_atual_2 =< Andar_origem,
+						Andar_atual_3 =< Andar_origem ->
+						(
+							Andar_origem - Andar_atual_2 =< Andar_origem - Andar_atual_3 ->
+								format('Elevador: ~w  Destino: ~wº andar',[2, Andar_destino]),
+								add_parada(2,Andar_destino),
+            					compare_andar(2,Andar_atual,s,Andar_origem,Andar_destino),
+								Retorno is 1
+							;
+								format('Elevador: ~w  Destino: ~wº andar',[3, Andar_destino]),
+								add_parada(3,Andar_destino),
+            					compare_andar(3,Andar_atual,s,Andar_origem,Andar_destino),
+								Retorno is 1
+
+						)
+						;
+						Retorno is 0
+					)
+			)
+
+	).
 
 
