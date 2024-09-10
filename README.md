@@ -1,10 +1,9 @@
-# mata64-ia
+# Simultaneous Elevator
 
-- Base de conhecimento utilizando um cálculo baseado na
-lógica de predicados, para um agente que controle o funcionamento de 3 elevadores interligados, em um edifício com 20 andares, que apresentem um funcionamento inteligente.
-- Comando para rodar a base de conhecimento
+- Knowledge base using a calculation based on predicate logic, for an agent that controls the operation of 3 interconnected elevators, in a building with 20 floors, which have intelligent operation.
+- Command to run the knowledge base
 	- swipl file.pl
 
-> [Interpretador – SWI Prolog](http://www.swi-prolog.org/) 
+> [Prolog environment – SWI Prolog](http://www.swi-prolog.org/)
 
 > http://wiki.di.uminho.pt/twiki/pub/Education/LC/0506/prolog61-68.pdf
